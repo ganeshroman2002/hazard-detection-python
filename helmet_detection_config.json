@@ -1,0 +1,7 @@
+{
+  "confidence_threshold": 0.5,
+  "auto_screenshot": true,
+  "camera_index": 0,
+  "output_directory": "screenshots",
+  "target_fps": 60
+}
