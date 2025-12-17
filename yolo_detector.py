@@ -291,13 +291,16 @@ class AdvancedHelmetDetector:
                 # --- CHECK HELMET ---
                 # Positive check
                 for helmet in safety_items['helmet']:
-                    if self.is_item_in_region(helmet['bbox'], body_regions.head):
+                    # Check head region OR full person box (fallback for sitting/bending)
+                    if self.is_item_in_region(helmet['bbox'], body_regions.head) or \
+                       self.is_item_in_region(helmet['bbox'], person_bbox):
                         status.has_helmet = True
                         status.helmet_confidence = max(status.helmet_confidence, helmet['confidence'])
                 
                 # Negative check (explicit violation)
                 for no_helmet in safety_items['no_helmet']:
-                    if self.is_item_in_region(no_helmet['bbox'], body_regions.head):
+                    if self.is_item_in_region(no_helmet['bbox'], body_regions.head) or \
+                       self.is_item_in_region(no_helmet['bbox'], person_bbox):
                         # Only mark as violation if NO positive helmet detected
                         # This fixes "Image 1" (Wearing helmet but shown as unsafe)
                         if not status.has_helmet:
@@ -313,13 +316,16 @@ class AdvancedHelmetDetector:
                 # --- CHECK VEST ---
                 # Positive check
                 for vest in safety_items['vest']:
-                    if self.is_item_in_region(vest['bbox'], body_regions.torso):
+                    # Check torso region OR full person box (fallback for sitting)
+                    if self.is_item_in_region(vest['bbox'], body_regions.torso) or \
+                       self.is_item_in_region(vest['bbox'], person_bbox):
                         status.has_vest = True
                         status.vest_confidence = max(status.vest_confidence, vest['confidence'])
                 
                 # Negative check (explicit violation)
                 for no_vest in safety_items['no_vest']:
-                    if self.is_item_in_region(no_vest['bbox'], body_regions.torso):
+                    if self.is_item_in_region(no_vest['bbox'], body_regions.torso) or \
+                       self.is_item_in_region(no_vest['bbox'], person_bbox):
                          if not status.has_vest:
                              if 'NO VEST' not in status.violations:
                                 status.violations.append('NO VEST')
@@ -331,14 +337,16 @@ class AdvancedHelmetDetector:
                 # --- CHECK BOOTS ---
                 # Positive check
                 for boots in safety_items['boots']:
-                    if self.is_item_in_region(boots['bbox'], body_regions.legs):
+                    if self.is_item_in_region(boots['bbox'], body_regions.legs) or \
+                       self.is_item_in_region(boots['bbox'], person_bbox):
                         status.has_boots = True
                         status.boots_confidence = max(status.boots_confidence, boots['confidence'])
                 
                 # Negative check (if exists in model)
                 if 'no_boots' in safety_items:
                     for no_boots in safety_items['no_boots']:
-                        if self.is_item_in_region(no_boots['bbox'], body_regions.legs):
+                        if self.is_item_in_region(no_boots['bbox'], body_regions.legs) or \
+                           self.is_item_in_region(no_boots['bbox'], person_bbox):
                             status.has_boots = False
                             if 'NO BOOTS' not in status.violations:
                                 status.violations.append('NO BOOTS')

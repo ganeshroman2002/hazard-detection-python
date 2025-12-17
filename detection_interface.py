@@ -57,6 +57,9 @@ class ResponsiveDetectionInterface:
         self.setup_logging()
         self.create_responsive_interface()
         self.setup_detection_loop()
+        
+        # Auto-start for verification
+        # self.root.after(15000, self.start_detection)
     
     def setup_logging(self):
         """Setup logging for the interface"""
